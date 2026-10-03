@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login | TLogos</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="logo">TLogos</div>
+
+        <a href="index.html" class="back-link">
+            ← Back
+        </a>
+    </header>
+
+
+    <main class="form-page">
+
+        <div class="form-card">
+
+            <h1>Welcome Back</h1>
+
+            <p class="form-intro">
+                Login to your TLogos account
+            </p>
+
+
+            <form id="loginForm">
+
+                <div class="form-group">
+
+                    <label for="loginEmail">
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="loginEmail"
+                        placeholder="Enter your email"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="loginPassword">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="loginPassword"
+                        placeholder="Enter your password"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="form-button"
+                >
+                    Login
+                </button>
+
+            </form>
+
+
+            <p class="form-footer">
+                Don't have an account?
+                <a href="customer.html">Create an account</a>
+            </p>
+
+        </div>
+
+    </main>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+
+
+    <script>
+
+        document
+            .getElementById("loginForm")
+            .addEventListener("submit", async function(event) {
+
+                event.preventDefault();
+
+                const email =
+                    document.getElementById("loginEmail").value.trim();
+
+                const password =
+                    document.getElementById("loginPassword").value;
+
+                const button =
+                    document.querySelector(".form-button");
+
+                button.disabled = true;
+                button.textContent = "Logging in...";
+
+
+                try {
+
+                    const { data, error } =
+                        await supabaseClient.auth.signInWithPassword({
+                            email: email,
+                            password: password
+                        });
+
+
+                    if (error) {
+                        throw error;
+                    }
+
+
+                    alert("Login successful!");
+
+
+                    window.location.href = "customer-dashboard.html";
+
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    alert("Login failed: " + error.message);
+
+                    button.disabled = false;
+                    button.textContent = "Login";
+
+                }
+
+            });
+
+    </script>
+
+</body>
+</html>

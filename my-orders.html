@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Orders | TLogos</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="logo">TLogos</div>
+
+    <a href="customer-dashboard.html" class="back-link">
+        ← Dashboard
+    </a>
+
+</header>
+
+
+<main class="form-page">
+
+    <div class="form-card">
+
+        <h1>My Orders</h1>
+
+        <p class="form-intro">
+            View your laundry requests and their current status.
+        </p>
+
+
+        <div id="ordersContainer">
+
+            <p>Loading your orders...</p>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase.js"></script>
+
+
+<script>
+
+async function loadOrders() {
+
+    const container =
+        document.getElementById("ordersContainer");
+
+    try {
+
+        const {
+            data: { user },
+            error: userError
+        } = await supabaseClient.auth.getUser();
+
+
+        if (userError || !user) {
+
+            window.location.href = "login.html";
+
+            return;
+        }
+
+
+        const {
+            data: orders,
+            error
+        } = await supabaseClient
+
+            .from("orders")
+
+            .select(`
+                id,
+                pickup_address,
+                total_amount,
+                status,
+                created_at,
+                laundry_id
+            `)
+
+            .eq("customer_id", user.id)
+
+            .order("created_at", {
+                ascending: false
+            });
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        if (!orders || orders.length === 0) {
+
+            container.innerHTML = `
+                <div class="dashboard-card">
+
+                    <h3>No Orders Yet</h3>
+
+                    <p>
+                        You have not made any laundry requests yet.
+                    </p>
+
+                    <button
+                        class="form-button"
+                        onclick="requestLaundry()"
+                    >
+                        Request Laundry
+                    </button>
+
+                </div>
+            `;
+
+            return;
+        }
+
+
+        container.innerHTML = "";
+
+
+        orders.forEach(order => {
+
+            const date =
+                new Date(order.created_at)
+                .toLocaleString();
+
+
+            let statusText =
+                order.status || "requested";
+
+
+            statusText =
+                statusText.charAt(0).toUpperCase()
+                + statusText.slice(1);
+
+
+            const orderCard =
+                document.createElement("div");
+
+            orderCard.className =
+                "dashboard-card";
+
+
+            orderCard.innerHTML = `
+
+                <h3>
+                    Order #${order.id.substring(0, 8)}
+                </h3>
+
+                <p>
+                    <strong>Pickup:</strong>
+                    ${order.pickup_address}
+                </p>
+
+                <p>
+                    <strong>Status:</strong>
+                    ${statusText}
+                </p>
+
+                <p>
+                    <strong>Amount:</strong>
+                    GH₵ ${Number(
+                        order.total_amount || 0
+                    ).toFixed(2)}
+                </p>
+
+                <p>
+                    <strong>Date:</strong>
+                    ${date}
+                </p>
+
+            `;
+
+
+            container.appendChild(orderCard);
+
+        });
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        container.innerHTML = `
+            <p>
+                Unable to load your orders.
+                Please try again.
+            </p>
+        `;
+
+    }
+
+}
+
+
+function requestLaundry() {
+
+    window.location.href =
+        "request-laundry.html";
+
+}
+
+
+loadOrders();
+
+const {
+    data: orderChannel
+} = supabaseClient
+    .channel("customer-orders")
+    .on(
+        "postgres_changes",
+        {
+            event: "UPDATE",
+            schema: "public",
+            table: "orders"
+        },
+        function(payload) {
+
+            loadOrders();
+
+        }
+    )
+    .subscribe();
+
+</script>
+
+</body>
+</html>

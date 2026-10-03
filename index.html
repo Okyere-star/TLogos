@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="theme-color" content="#172554">
+
+    <title>TLogos - Laundry Services</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="top-bar">
+        <div class="logo">TLogos</div>
+
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+    </header>
+
+    <div id="mobileMenu" class="mobile-menu">
+        <a href="#home">Home</a>
+        <a href="#how">How It Works</a>
+        <a href="#about">About TLogos</a>
+    </div>
+
+    <main>
+
+        <!-- HERO SECTION -->
+        <section id="home" class="hero">
+
+            <div class="hero-content">
+
+                <div class="logo-circle">
+                    🧺
+                </div>
+
+                <h1>
+                    Your Laundry.<br>
+                    <span>We Bring It Closer.</span>
+                </h1>
+
+                <p>
+                    Request laundry services from trusted laundry businesses
+                    near you. We connect you, they collect, wash and deliver.
+                </p>
+
+                <div class="hero-buttons">
+
+                    <button class="primary-btn" onclick="chooseCustomer()">
+                        Request Laundry
+                    </button>
+
+                    <button class="secondary-btn" onclick="chooseLaundry()">
+                        Join as a Laundry
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- HOW IT WORKS -->
+        <section id="how" class="section">
+
+            <h2>How TLogos Works</h2>
+
+            <p class="section-intro">
+                Getting your laundry done has never been easier.
+            </p>
+
+            <div class="steps">
+
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3>Request</h3>
+                    <p>
+                        Tell us what laundry you need and where to pick it up.
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3>Match</h3>
+                    <p>
+                        TLogos connects you with suitable laundry providers nearby.
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3>Pickup</h3>
+                    <p>
+                        Your selected laundry provider comes to collect your clothes.
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h3>Clean & Deliver</h3>
+                    <p>
+                        Your clothes are washed, ironed and delivered back to you.
+                    </p>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- CUSTOMER / LAUNDRY CHOICE -->
+        <section class="choice-section">
+
+            <h2>What would you like to do?</h2>
+
+            <div class="choice-container">
+
+                <div class="choice-card">
+
+                    <div class="choice-icon">👤</div>
+
+                    <h3>I Need Laundry</h3>
+
+                    <p>
+                        Find a laundry provider and request pickup and delivery.
+                    </p>
+
+                    <button onclick="chooseCustomer()">
+                        Continue as Customer
+                    </button>
+
+                </div>
+
+
+                <div class="choice-card">
+
+                    <div class="choice-icon">🏪</div>
+
+                    <h3>I Own a Laundry</h3>
+
+                    <p>
+                        Register your laundry business and receive customers.
+                    </p>
+
+                    <button onclick="chooseLaundry()">
+                        Join TLogos
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ABOUT -->
+        <section id="about" class="about-section">
+
+            <h2>About TLogos</h2>
+
+            <p>
+                TLogos is a laundry services marketplace designed to connect
+                customers with laundry businesses around them.
+            </p>
+
+            <p>
+                Whether you need your clothes washed, ironed, folded or
+                delivered, TLogos makes it easier to find and request the
+                service you need.
+            </p>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+
+        <div class="footer-logo">TLogos</div>
+
+        <p>
+            Connecting Ghana to better laundry services.
+        </p>
+
+        <p class="copyright">
+            © 2026 TLogos. All rights reserved.
+        </p>
+
+    </footer>
+
+
+    <script src="app.js"></script>
+
+</body>
+</html>

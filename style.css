@@ -1,0 +1,645 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #fffdf5;
+    color: #171717;
+    line-height: 1.6;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.top-bar {
+    height: 70px;
+    padding: 0 8%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    background: #f5b800;
+    color: #171717;
+
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.logo {
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.menu-btn {
+    border: none;
+    background: transparent;
+    color: #171717;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+
+/* =========================
+   MOBILE MENU
+========================= */
+
+.mobile-menu {
+    display: none;
+
+    background: #ffffff;
+
+    padding: 15px 8%;
+
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.mobile-menu a {
+    display: block;
+
+    text-decoration: none;
+
+    color: #171717;
+
+    padding: 10px 0;
+
+    font-weight: 600;
+}
+
+
+/* =========================
+   HERO
+========================= */
+
+.hero {
+    min-height: 650px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    padding: 70px 8%;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff4bf,
+            #fffdf5
+        );
+
+    color: #171717;
+}
+
+.hero-content {
+    max-width: 750px;
+}
+
+.logo-circle {
+    width: 90px;
+    height: 90px;
+
+    margin: 0 auto 25px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #f5b800;
+
+    font-size: 42px;
+
+    box-shadow: 0 8px 25px rgba(245, 184, 0, 0.3);
+}
+
+.hero h1 {
+    font-size: clamp(38px, 7vw, 68px);
+
+    line-height: 1.05;
+
+    margin-bottom: 25px;
+}
+
+.hero h1 span {
+    color: #d99d00;
+}
+
+.hero p {
+    max-width: 650px;
+
+    margin: auto;
+
+    font-size: 18px;
+
+    color: #4b5563;
+}
+
+.hero-buttons {
+    margin-top: 35px;
+
+    display: flex;
+
+    gap: 15px;
+
+    justify-content: center;
+
+    flex-wrap: wrap;
+}
+
+.primary-btn,
+.secondary-btn {
+    padding: 15px 25px;
+
+    border-radius: 8px;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.primary-btn {
+    border: none;
+
+    background: #f5b800;
+
+    color: #171717;
+
+    box-shadow: 0 5px 15px rgba(245, 184, 0, 0.25);
+}
+
+.secondary-btn {
+    border: 2px solid #171717;
+
+    background: transparent;
+
+    color: #171717;
+}
+
+.primary-btn:hover,
+.secondary-btn:hover {
+    transform: translateY(-2px);
+}
+
+
+/* =========================
+   GENERAL SECTIONS
+========================= */
+
+.section,
+.choice-section,
+.about-section {
+    padding: 80px 8%;
+
+    text-align: center;
+}
+
+.section h2,
+.choice-section h2,
+.about-section h2 {
+    font-size: 34px;
+
+    margin-bottom: 10px;
+}
+
+.section-intro {
+    color: #6b7280;
+
+    margin-bottom: 40px;
+}
+
+
+/* =========================
+   STEPS
+========================= */
+
+.steps {
+    max-width: 1100px;
+
+    margin: 40px auto 0;
+
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 20px;
+}
+
+.step-card {
+    background: #ffffff;
+
+    padding: 30px 20px;
+
+    border-radius: 15px;
+
+    border: 1px solid #f3e7b3;
+
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.06);
+}
+
+.step-number {
+    width: 50px;
+    height: 50px;
+
+    margin: 0 auto 20px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #f5b800;
+
+    color: #171717;
+
+    font-weight: bold;
+
+    font-size: 20px;
+}
+
+.step-card h3 {
+    margin-bottom: 10px;
+}
+
+.step-card p {
+    color: #6b7280;
+}
+
+
+/* =========================
+   CUSTOMER / LAUNDRY CHOICE
+========================= */
+
+.choice-section {
+    background: #fff4bf;
+}
+
+.choice-container {
+    max-width: 900px;
+
+    margin: 40px auto 0;
+
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 25px;
+}
+
+.choice-card {
+    background: #ffffff;
+
+    padding: 40px 30px;
+
+    border-radius: 18px;
+
+    border: 1px solid #f3e7b3;
+
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.07);
+}
+
+.choice-icon {
+    font-size: 45px;
+
+    margin-bottom: 15px;
+}
+
+.choice-card h3 {
+    font-size: 23px;
+
+    margin-bottom: 10px;
+}
+
+.choice-card p {
+    color: #6b7280;
+
+    margin-bottom: 25px;
+}
+
+.choice-card button {
+    border: none;
+
+    background: #f5b800;
+
+    color: #171717;
+
+    padding: 13px 20px;
+
+    border-radius: 7px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.choice-card button:hover {
+    background: #d99d00;
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================
+   ABOUT
+========================= */
+
+.about-section {
+    max-width: 850px;
+
+    margin: auto;
+}
+
+.about-section p {
+    margin: 15px auto;
+
+    color: #6b7280;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+footer {
+    background: #171717;
+
+    color: white;
+
+    text-align: center;
+
+    padding: 50px 8%;
+}
+
+.footer-logo {
+    font-size: 30px;
+
+    font-weight: bold;
+
+    margin-bottom: 10px;
+
+    color: #f5b800;
+}
+
+footer p {
+    color: #d1d5db;
+}
+
+.copyright {
+    margin-top: 20px;
+
+    font-size: 14px;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 800px) {
+
+    .steps {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .top-bar {
+        padding: 0 6%;
+    }
+
+    .hero {
+        min-height: 600px;
+
+        padding: 60px 6%;
+    }
+
+    .hero p {
+        font-size: 16px;
+    }
+
+    .section,
+    .choice-section,
+    .about-section {
+        padding: 60px 6%;
+    }
+
+    .steps {
+        grid-template-columns: 1fr;
+    }
+
+    .choice-container {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+    }
+
+    .primary-btn,
+    .secondary-btn {
+        width: 100%;
+    }
+
+}
+
+/* =========================
+   REGISTRATION
+========================= */
+
+.registration-section {
+    min-height: calc(100vh - 70px);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 60px 6%;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff4bf,
+            #fffdf5
+        );
+}
+
+.registration-card {
+    width: 100%;
+    max-width: 550px;
+
+    background: #ffffff;
+
+    padding: 45px 40px;
+
+    border-radius: 20px;
+
+    border: 1px solid #f3e7b3;
+
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+
+    text-align: center;
+}
+
+.registration-icon {
+    width: 75px;
+    height: 75px;
+
+    margin: 0 auto 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #fff4bf;
+
+    font-size: 35px;
+}
+
+.registration-card h1 {
+    font-size: 32px;
+
+    margin-bottom: 10px;
+}
+
+.registration-intro {
+    color: #6b7280;
+
+    margin-bottom: 30px;
+}
+
+.form-group {
+    text-align: left;
+
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-weight: 700;
+
+    color: #171717;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+
+    padding: 14px 15px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+
+    outline: none;
+
+    background: #ffffff;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #f5b800;
+
+    box-shadow: 0 0 0 3px rgba(245, 184, 0, 0.15);
+}
+
+.form-button {
+    width: 100%;
+
+    border: none;
+
+    background: #f5b800;
+
+    color: #171717;
+
+    padding: 15px;
+
+    border-radius: 8px;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    margin-top: 5px;
+
+    transition: 0.2s;
+}
+
+.form-button:hover {
+    background: #d99d00;
+
+    transform: translateY(-1px);
+}
+
+.switch-account {
+    margin-top: 25px;
+
+    color: #6b7280;
+}
+
+.switch-account a,
+.back-home a {
+    color: #b17d00;
+
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+.back-home {
+    margin-top: 20px;
+}
+
+
+/* MOBILE REGISTRATION */
+
+@media (max-width: 600px) {
+
+    .registration-section {
+        padding: 40px 5%;
+    }
+
+    .registration-card {
+        padding: 35px 22px;
+    }
+
+    .registration-card h1 {
+        font-size: 27px;
+    }
+
+}

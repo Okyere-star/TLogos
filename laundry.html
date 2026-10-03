@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta name="theme-color" content="#f5b800">
+
+    <title>TLogos - Register Your Laundry</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+    <header class="top-bar">
+
+        <div class="logo">
+            TLogos
+        </div>
+
+        <button
+            class="menu-btn"
+            onclick="window.location.href='index.html'"
+        >
+            ←
+        </button>
+
+    </header>
+
+
+    <main>
+
+        <section class="registration-section">
+
+            <div class="registration-card">
+
+                <div class="registration-icon">
+                    🏪
+                </div>
+
+                <h1>
+                    Join TLogos
+                </h1>
+
+                <p class="registration-intro">
+                    Register your laundry business and start
+                    receiving customers near you.
+                </p>
+
+
+                <form id="laundryForm">
+
+                    <div class="form-group">
+
+                        <label for="businessName">
+                            Laundry Business Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="businessName"
+                            placeholder="e.g. Clean Wash Laundry"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="ownerName">
+                            Owner / Manager Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="ownerName"
+                            placeholder="Enter your name"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="laundryPhone">
+                            Phone Number
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="laundryPhone"
+                            placeholder="e.g. 024 123 4567"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="laundryEmail">
+                            Email Address
+                        </label>
+
+                        <input
+                            type="email"
+                            id="laundryEmail"
+                            placeholder="Enter your email"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="laundryAddress">
+                            Business Location
+                        </label>
+
+                        <input
+                            type="text"
+                            id="laundryAddress"
+                            placeholder="e.g. KNUST, Kumasi"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="serviceRadius">
+                            Pickup Service Radius
+                        </label>
+
+                        <select id="serviceRadius" required>
+
+                            <option value="">
+                                Select radius
+                            </option>
+
+                            <option value="2">
+                                Within 2 km
+                            </option>
+
+                            <option value="5">
+                                Within 5 km
+                            </option>
+
+                            <option value="10">
+                                Within 10 km
+                            </option>
+
+                            <option value="15">
+                                Within 15 km
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="laundryPassword">
+                            Password
+                        </label>
+
+                        <input
+                            type="password"
+                            id="laundryPassword"
+                            placeholder="Create a password"
+                            required
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="form-button"
+                    >
+                        Register Laundry
+                    </button>
+
+                </form>
+
+
+                <p class="switch-account">
+
+                    Looking for laundry services?
+
+                    <a href="customer.html">
+                        Register as a customer
+                    </a>
+
+                </p>
+
+
+                <p class="back-home">
+
+                    <a href="index.html">
+                        ← Back to TLogos
+                    </a>
+
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+<script>
+
+document
+    .getElementById("laundryForm")
+    .addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+        const businessName =
+            document.getElementById("businessName").value.trim();
+
+        const ownerName =
+            document.getElementById("ownerName").value.trim();
+
+        const phone =
+            document.getElementById("laundryPhone").value.trim();
+
+        const email =
+            document.getElementById("laundryEmail").value.trim();
+
+        const address =
+            document.getElementById("laundryAddress").value.trim();
+            let latitude = null;
+let longitude = null;
+
+if (navigator.geolocation) {
+
+    try {
+
+        const position = await new Promise(
+            function(resolve, reject) {
+
+                navigator.geolocation.getCurrentPosition(
+                    resolve,
+                    reject,
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                );
+
+            }
+        );
+
+        latitude =
+            position.coords.latitude;
+
+        longitude =
+            position.coords.longitude;
+
+    } catch (locationError) {
+
+        console.warn(
+            "Laundry location could not be obtained:",
+            locationError
+        );
+
+    }
+
+}
+
+        const serviceRadius =
+            Number(document.getElementById("serviceRadius").value);
+
+        const password =
+            document.getElementById("laundryPassword").value;
+
+        const button =
+            document.querySelector(".form-button");
+
+        button.disabled = true;
+        button.textContent = "Creating account...";
+
+
+        try {
+
+            // Create authentication account
+
+            const {
+                data: authData,
+                error: authError
+            } = await supabaseClient.auth.signUp({
+                email: email,
+                password: password
+            });
+
+
+            if (authError) {
+                throw authError;
+            }
+
+
+            if (!authData.user) {
+                throw new Error(
+                    "The account could not be created."
+                );
+            }
+
+
+            // Create laundry business profile
+
+            const {
+                error: profileError
+            } = await supabaseClient
+
+            .from("laundries")
+.insert({
+    id: authData.user.id,
+    business_name: businessName,
+    owner_name: ownerName,
+    phone: phone,
+    email: email,
+    address: address,
+    latitude: latitude,
+    longitude: longitude,
+    service_radius: serviceRadius,
+    status: "pending"
+});
+
+
+            if (profileError) {
+                throw profileError;
+            }
+
+alert(
+    "Laundry business registered successfully!"
+);
+
+window.location.href =
+    "laundry-dashboard.html";
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                "Registration failed: " +
+                error.message
+            );
+
+            button.disabled = false;
+
+            button.textContent =
+                "Register Laundry";
+
+        }
+
+    });
+
+</script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+
+</body>
+
+</html>
