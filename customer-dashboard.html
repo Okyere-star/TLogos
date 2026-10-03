@@ -10,7 +10,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Laundry Dashboard | TLogos</title>
+    <title>Customer Dashboard | TLogos</title>
 
     <link rel="stylesheet" href="style.css">
 
@@ -20,285 +20,262 @@
 <body>
 
 
-    <header class="header">
+<header class="header">
 
-        <div class="logo">
-            TLogos
-        </div>
+    <div class="logo">
+        TLogos
+    </div>
 
-        <button
-            id="logoutButton"
-            class="logout-button"
-        >
-            Logout
-        </button>
+    <button
+        id="logoutButton"
+        class="logout-button"
+    >
+        Logout
+    </button>
 
-    </header>
-
-
-
-    <main class="dashboard">
+</header>
 
 
-        <section class="dashboard-welcome">
 
-            <h1>
-                Laundry Dashboard 🧺
-            </h1>
+<main class="dashboard">
 
-            <p id="businessName">
-                Loading your business...
+
+    <section class="dashboard-welcome">
+
+        <h1>
+            Welcome to TLogos 👋
+        </h1>
+
+        <p id="customerName">
+            Loading your profile...
+        </p>
+
+    </section>
+
+
+
+    <section class="dashboard-grid">
+
+
+        <div class="dashboard-card">
+
+            <div class="dashboard-icon">
+                🧺
+            </div>
+
+            <h2>
+                Request Laundry
+            </h2>
+
+            <p>
+                Find nearby laundry businesses and request their services.
             </p>
 
-        </section>
+            <button
+                class="dashboard-button"
+                onclick="requestLaundry()"
+            >
+                Request Laundry
+            </button>
+
+        </div>
 
 
 
-        <section class="dashboard-grid">
+        <div class="dashboard-card">
 
-
-            <div class="dashboard-card">
-
-                <div class="dashboard-icon">
-                    📥
-                </div>
-
-                <h2>
-                    Incoming Requests
-                </h2>
-
-                <p>
-                    View new customers looking for laundry services.
-                </p>
-
-                <button
-                    class="dashboard-button"
-                    onclick="viewRequests()"
-                >
-                    View Requests
-                </button>
-
+            <div class="dashboard-icon">
+                📦
             </div>
 
+            <h2>
+                My Orders
+            </h2>
+
+            <p>
+                Track your laundry requests and current orders.
+            </p>
+
+            <button
+                class="dashboard-button"
+                onclick="viewOrders()"
+            >
+                View My Orders
+            </button>
+
+        </div>
 
 
-            <div class="dashboard-card">
 
-                <div class="dashboard-icon">
-                    📦
-                </div>
+        <div class="dashboard-card">
 
-                <h2>
-                    Active Orders
-                </h2>
-
-                <p>
-                    Manage laundry orders currently in progress.
-                </p>
-
-                <button
-                    class="dashboard-button"
-                    onclick="viewOrders()"
-                >
-                    View Orders
-                </button>
-
+            <div class="dashboard-icon">
+                ⭐
             </div>
 
+            <h2>
+                My Reviews
+            </h2>
+
+            <p>
+                View and manage your laundry service reviews.
+            </p>
+
+            <button
+                class="dashboard-button"
+                onclick="viewReviews()"
+            >
+                View Reviews
+            </button>
+
+        </div>
 
 
-            <div class="dashboard-card">
 
-                <div class="dashboard-icon">
-                    💰
-                </div>
+        <div class="dashboard-card">
 
-                <h2>
-                    Earnings
-                </h2>
-
-                <p>
-                    View your completed orders and earnings.
-                </p>
-
-                <button
-                    class="dashboard-button"
-                    onclick="viewEarnings()"
-                >
-                    View Earnings
-                </button>
-
+            <div class="dashboard-icon">
+                👤
             </div>
 
+            <h2>
+                My Profile
+            </h2>
+
+            <p>
+                View your TLogos customer account information.
+            </p>
+
+            <button
+                class="dashboard-button"
+                onclick="viewProfile()"
+            >
+                My Profile
+            </button>
+
+        </div>
 
 
-            <div class="dashboard-card">
+    </section>
 
-                <div class="dashboard-icon">
-                    ⭐
-                </div>
-
-                <h2>
-                    Reviews
-                </h2>
-
-                <p>
-                    See customer ratings and reviews.
-                </p>
-
-                <button
-                    class="dashboard-button"
-                    onclick="viewReviews()"
-                >
-                    View Reviews
-                </button>
-
-            </div>
-
-
-        </section>
-
-    </main>
+</main>
 
 
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <script src="supabase.js"></script>
-
-
-    <script>
-
-        async function loadLaundry() {
-
-            const {
-                data: {
-                    user
-                },
-                error
-            } = await supabaseClient.auth.getUser();
+<script src="supabase.js"></script>
 
 
-            if (error || !user) {
+<script>
 
-                window.location.href =
-                    "login.html";
+async function loadCustomer() {
 
-                return;
-
-            }
-
-
-            const {
-                data: laundry,
-                error: laundryError
-            } = await supabaseClient
-                .from("laundries")
-                .select("business_name, status")
-                .eq("id", user.id)
-                .single();
+    const {
+        data: {
+            user
+        },
+        error
+    } = await supabaseClient.auth.getUser();
 
 
-            if (laundryError) {
+    if (error || !user) {
 
-                console.error(laundryError);
+        window.location.href =
+            "login.html";
 
-                document.getElementById(
-                    "businessName"
-                ).textContent =
-                    "Welcome to TLogos";
+        return;
 
-                return;
-
-            }
+    }
 
 
-            document.getElementById(
-                "businessName"
-            ).textContent =
-                laundry.business_name;
+    const {
+        data: customer,
+        error: customerError
+    } = await supabaseClient
+        .from("customers")
+        .select("full_name")
+        .eq("id", user.id)
+        .single();
 
 
-            if (laundry.status === "pending") {
+    if (customerError) {
 
-                document.getElementById(
-                    "businessName"
-                ).textContent =
-                    laundry.business_name +
-                    " • Verification pending";
+        console.error(customerError);
 
-            }
+        document.getElementById(
+            "customerName"
+        ).textContent =
+            "Welcome to TLogos";
 
-        }
+        return;
+
+    }
+
+
+    document.getElementById(
+        "customerName"
+    ).textContent =
+        "Hello, " + customer.full_name + "!";
+
+}
 
 
 
-        document
-            .getElementById("logoutButton")
-            .addEventListener("click", async function() {
+document
+    .getElementById("logoutButton")
+    .addEventListener("click", async function() {
 
-                await supabaseClient.auth.signOut();
+        await supabaseClient.auth.signOut();
 
-                window.location.href =
-                    "login.html";
+        window.location.href =
+            "index.html";
 
-            });
+    });
 
 
-function viewRequests() {
+
+function requestLaundry() {
 
     window.location.href =
-        "laundry-requests.html";
+        "request-laundry.html";
 
 }
+
+
 
 function viewOrders() {
-    window.location.href = "my-orders.html";
+
+    window.location.href =
+        "my-orders.html";
+
 }
 
 
-        function viewEarnings() {
 
-            alert(
-                "Earnings section will be built next!"
-            );
+function viewReviews() {
 
-        }
+    alert(
+        "Reviews section will be built next!"
+    );
 
-
-
-        function viewReviews() {
-
-            alert(
-                "Reviews section will be built next!"
-            );
-
-        }
+}
 
 
 
-        loadOrders();
+function viewProfile() {
 
-const {
-    data: orderChannel
-} = supabaseClient
-    .channel("customer-orders")
-    .on(
-        "postgres_changes",
-        {
-            event: "UPDATE",
-            schema: "public",
-            table: "orders"
-        },
-        function(payload) {
+    alert(
+        "Profile section will be built next!"
+    );
 
-            loadOrders();
+}
 
-        }
-    )
-    .subscribe();
 
-    </script>
+
+loadCustomer();
+
+</script>
 
 
 </body>
