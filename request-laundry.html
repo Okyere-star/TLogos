@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,9 +11,54 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Incoming Requests | TLogos</title>
+    <title>Request Laundry | TLogos</title>
 
     <link rel="stylesheet" href="style.css">
+
+    <style>
+
+        .laundry-card {
+            background: #ffffff;
+            border: 1px solid #f3e7b3;
+            border-radius: 18px;
+            padding: 22px;
+            margin-bottom: 18px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .laundry-card h2 {
+            margin-top: 0;
+        }
+
+        .distance {
+            color: #8a6500;
+            font-weight: 700;
+        }
+
+        .location-status {
+            background: #fff4bf;
+            padding: 12px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .request-button {
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-family: inherit;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+
+    </style>
 
 </head>
 
@@ -27,7 +73,7 @@
     </div>
 
     <a
-        href="laundry-dashboard.html"
+        href="customer-dashboard.html"
         class="back-link"
     >
         ← Dashboard
@@ -37,34 +83,128 @@
 
 
 
-<main class="dashboard">
+<main class="form-page">
 
 
-    <section class="dashboard-welcome">
+    <div class="form-card">
+
 
         <h1>
-            Incoming Requests 📥
+            Request Laundry 🧺
         </h1>
 
-        <p>
-            Laundry requests assigned to your business.
+
+        <p class="form-intro">
+            Tell us what you need and we will find
+            nearby laundry businesses for you.
         </p>
 
-    </section>
 
 
+        <div class="form-group">
 
-    <section id="requestsContainer">
+            <label for="pickupAddress">
+                Pickup Address
+            </label>
 
-        <div class="dashboard-card">
-
-            <p>
-                Loading requests...
-            </p>
+            <input
+                type="text"
+                id="pickupAddress"
+                placeholder="Enter your pickup address"
+                required
+            >
 
         </div>
 
-    </section>
+
+
+        <div class="form-group">
+
+            <label for="laundryType">
+                Laundry Type
+            </label>
+
+            <select
+                id="laundryType"
+                required
+            >
+
+                <option value="">
+                    Select laundry type
+                </option>
+
+                <option value="Regular Laundry">
+                    Regular Laundry
+                </option>
+
+                <option value="Washing and Ironing">
+                    Washing and Ironing
+                </option>
+
+                <option value="Ironing Only">
+                    Ironing Only
+                </option>
+
+                <option value="Bedding">
+                    Bedding
+                </option>
+
+                <option value="Shoes">
+                    Shoes
+                </option>
+
+                <option value="Other">
+                    Other
+                </option>
+
+            </select>
+
+        </div>
+
+
+
+        <div class="form-group">
+
+            <label for="description">
+                Additional Details
+            </label>
+
+            <textarea
+                id="description"
+                placeholder="Tell the laundry business anything important about your order..."
+            ></textarea>
+
+        </div>
+
+
+
+        <div class="location-status" id="locationStatus">
+
+            📍 Your location will be used to find
+            nearby laundries.
+
+        </div>
+
+
+
+        <button
+            class="form-button"
+            id="findLaundryButton"
+        >
+            Find Nearby Laundries
+        </button>
+
+
+    </div>
+
+
+
+    <div
+        id="laundriesContainer"
+        style="margin-top:25px;"
+    >
+
+    </div>
 
 
 </main>
@@ -78,63 +218,193 @@
 
 <script>
 
-async function loadRequests() {
+
+let customerLatitude = null;
+
+let customerLongitude = null;
+
+
+
+async function checkCustomerLogin() {
+
+    const {
+        data: {
+            user
+        },
+        error
+    } =
+        await supabaseClient.auth.getUser();
+
+
+    if (error || !user) {
+
+        window.location.href =
+            "login.html";
+
+        return false;
+
+    }
+
+    return true;
+
+}
+
+
+
+async function findNearbyLaundries() {
+
+
+    const loggedIn =
+        await checkCustomerLogin();
+
+
+    if (!loggedIn) {
+
+        return;
+
+    }
+
+
+
+    const pickupAddress =
+        document
+            .getElementById("pickupAddress")
+            .value
+            .trim();
+
+
+    const laundryType =
+        document
+            .getElementById("laundryType")
+            .value;
+
+
+    if (!pickupAddress) {
+
+        alert(
+            "Please enter your pickup address."
+        );
+
+        return;
+
+    }
+
+
+    if (!laundryType) {
+
+        alert(
+            "Please select a laundry type."
+        );
+
+        return;
+
+    }
+
+
+
+    const button =
+        document.getElementById(
+            "findLaundryButton"
+        );
+
+
+    const status =
+        document.getElementById(
+            "locationStatus"
+        );
+
 
     const container =
         document.getElementById(
-            "requestsContainer"
+            "laundriesContainer"
         );
+
+
+
+    button.disabled = true;
+
+    button.textContent =
+        "Finding nearby laundries...";
+
+
+
+    container.innerHTML = "";
+
+
+
+    if (!navigator.geolocation) {
+
+        alert(
+            "Location services are not supported by your browser."
+        );
+
+        button.disabled = false;
+
+        button.textContent =
+            "Find Nearby Laundries";
+
+        return;
+
+    }
+
 
 
     try {
 
 
+        status.textContent =
+            "📍 Getting your current location...";
+
+
+
+        const position =
+            await new Promise(
+                function(resolve, reject) {
+
+                    navigator.geolocation.getCurrentPosition(
+                        resolve,
+                        reject,
+                        {
+                            enableHighAccuracy: true,
+                            timeout: 15000,
+                            maximumAge: 0
+                        }
+                    );
+
+                }
+            );
+
+
+
+        customerLatitude =
+            position.coords.latitude;
+
+
+        customerLongitude =
+            position.coords.longitude;
+
+
+
+        status.textContent =
+            "📍 Location found. Searching for nearby laundries...";
+
+
+
         const {
-            data: {
-                user
-            },
-            error: userError
-        } =
-            await supabaseClient.auth.getUser();
-
-
-        if (userError || !user) {
-
-            window.location.href =
-                "laundry-login.html";
-
-            return;
-
-        }
-
-
-
-        const {
-            data: requests,
+            data: laundries,
             error
         } =
-            await supabaseClient
+            await supabaseClient.rpc(
+                "get_nearby_laundries",
+                {
+                    customer_lat:
+                        customerLatitude,
 
-                .from("orders")
+                    customer_lng:
+                        customerLongitude
+                }
+            );
 
-                .select("*")
-
-                .eq(
-                    "laundry_id",
-                    user.id
-                )
-
-                .eq(
-                    "status",
-                    "requested"
-                )
-
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
-                );
 
 
         if (error) {
@@ -145,23 +415,32 @@ async function loadRequests() {
 
 
 
+        button.disabled = false;
+
+        button.textContent =
+            "Find Nearby Laundries";
+
+
+
         if (
-            !requests ||
-            requests.length === 0
+            !laundries ||
+            laundries.length === 0
         ) {
+
+            status.textContent =
+                "📍 Location found, but no nearby approved laundries were found.";
 
             container.innerHTML = `
 
                 <div class="dashboard-card">
 
                     <h2>
-                        No Incoming Requests
+                        No Nearby Laundries
                     </h2>
 
                     <p>
-                        New customer requests
-                        assigned to your laundry
-                        will appear here.
+                        There are currently no approved
+                        laundry businesses serving your area.
                     </p>
 
                 </div>
@@ -174,12 +453,14 @@ async function loadRequests() {
 
 
 
-        container.innerHTML = "";
+        status.textContent =
+            "📍 Nearby laundries found!";
 
 
 
-        requests.forEach(
-            function(request) {
+        laundries.forEach(
+            function(laundry) {
+
 
                 const card =
                     document.createElement(
@@ -188,65 +469,53 @@ async function loadRequests() {
 
 
                 card.className =
-                    "dashboard-card";
+                    "laundry-card";
 
-
-                card.style.marginBottom =
-                    "20px";
 
 
                 card.innerHTML = `
 
-                <p style="font-size: 13px; color: #6b7280; margin-bottom: 5px;">
-    Order Reference
-</p>
+                    <h2>
+                        ${laundry.business_name}
+                    </h2>
 
-<h2 style="margin-top: 0;">
-    ${request.order_reference || "TLogos Order"}
-</h2>
-
-<p>
-    <strong>
-        New Laundry Request
-    </strong>
-</p>
 
                     <p>
                         <strong>
-                            Pickup Location:
+                            Address:
                         </strong>
 
-                        ${request.pickup_address}
+                        ${laundry.address || "Address not provided"}
+                    </p>
+
+
+                    <p class="distance">
+
+                        📍
+                        ${Number(
+                            laundry.distance_km
+                        ).toFixed(2)}
+                        km away
+
                     </p>
 
 
                     <p>
-                        <strong>
-                            Requested:
-                        </strong>
 
-                        ${new Date(
-                            request.created_at
-                        ).toLocaleString()}
-                    </p>
+                        Service radius:
+                        ${laundry.service_radius}
+                        km
 
-
-                    <p>
-                        <strong>
-                            Status:
-                        </strong>
-
-                        ${request.status}
                     </p>
 
 
                     <button
-                        class="dashboard-button"
-                        onclick="acceptRequest(
-                            '${request.id}'
+                        class="dashboard-button request-button"
+                        onclick="requestLaundry(
+                            '${laundry.id}'
                         )"
                     >
-                        Accept Request
+                        Request This Laundry
                     </button>
 
                 `;
@@ -262,7 +531,18 @@ async function loadRequests() {
 
     } catch (error) {
 
+
         console.error(error);
+
+
+        button.disabled = false;
+
+        button.textContent =
+            "Find Nearby Laundries";
+
+
+        status.textContent =
+            "📍 Unable to find your location.";
 
 
         container.innerHTML = `
@@ -270,7 +550,7 @@ async function loadRequests() {
             <div class="dashboard-card">
 
                 <h2>
-                    Unable to Load Requests
+                    Unable to Find Laundries
                 </h2>
 
                 <p>
@@ -287,7 +567,10 @@ async function loadRequests() {
 
 
 
-async function acceptRequest(orderId) {
+async function requestLaundry(
+    laundryId
+) {
+
 
     try {
 
@@ -301,10 +584,55 @@ async function acceptRequest(orderId) {
             await supabaseClient.auth.getUser();
 
 
-        if (userError || !user) {
+        if (
+            userError ||
+            !user
+        ) {
 
             window.location.href =
-                "laundry-login.html";
+                "login.html";
+
+            return;
+
+        }
+
+
+
+        const pickupAddress =
+            document
+                .getElementById(
+                    "pickupAddress"
+                )
+                .value
+                .trim();
+
+
+        const laundryType =
+            document
+                .getElementById(
+                    "laundryType"
+                )
+                .value;
+
+
+        const description =
+            document
+                .getElementById(
+                    "description"
+                )
+                .value
+                .trim();
+
+
+
+        if (
+            !customerLatitude ||
+            !customerLongitude
+        ) {
+
+            alert(
+                "Please find nearby laundries first."
+            );
 
             return;
 
@@ -313,32 +641,39 @@ async function acceptRequest(orderId) {
 
 
         const {
+            data: order,
             error
         } =
             await supabaseClient
 
                 .from("orders")
 
-                .update({
+                .insert({
 
-                    status: "accepted"
+                    customer_id:
+                        user.id,
+
+                    laundry_id:
+                        laundryId,
+
+                    pickup_address:
+                        pickupAddress,
+
+                    pickup_latitude:
+                        customerLatitude,
+
+                    pickup_longitude:
+                        customerLongitude,
+
+                    status:
+                        "requested"
 
                 })
 
-                .eq(
-                    "id",
-                    orderId
-                )
+                .select()
 
-                .eq(
-                    "laundry_id",
-                    user.id
-                )
+                .single();
 
-                .eq(
-                    "status",
-                    "requested"
-                );
 
 
         if (error) {
@@ -349,21 +684,35 @@ async function acceptRequest(orderId) {
 
 
 
-        alert(
-            "Request accepted successfully!"
+        console.log(
+            "Laundry type:",
+            laundryType
         );
 
 
-        loadRequests();
+        console.log(
+            "Additional details:",
+            description
+        );
+
+
+        alert(
+            "Laundry request sent successfully!"
+        );
+
+
+        window.location.href =
+            "my-orders.html";
 
 
     } catch (error) {
+
 
         console.error(error);
 
 
         alert(
-            "Could not accept request: " +
+            "Could not send laundry request: " +
             error.message
         );
 
@@ -373,7 +722,18 @@ async function acceptRequest(orderId) {
 
 
 
-loadRequests();
+document
+    .getElementById(
+        "findLaundryButton"
+    )
+    .addEventListener(
+        "click",
+        findNearbyLaundries
+    );
+
+
+
+checkCustomerLogin();
 
 </script>
 
@@ -381,3 +741,4 @@ loadRequests();
 </body>
 
 </html>
+```
