@@ -1,47 +1,221 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>My Orders | TLogos</title>
 
     <link rel="stylesheet" href="style.css">
+
+    <style>
+
+        .order-card {
+            background: #ffffff;
+            border: 1px solid #f3e7b3;
+            border-radius: 18px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.06);
+        }
+
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+
+        .order-number {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+
+        .status-label {
+            background: #fff4bf;
+            color: #8a6500;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+
+        .tracking {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin: 35px 0;
+        }
+
+
+        .tracking::before {
+            content: "";
+            position: absolute;
+            top: 18px;
+            left: 8%;
+            right: 8%;
+            height: 3px;
+            background: #e5e7eb;
+            z-index: 0;
+        }
+
+
+        .tracking-step {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            width: 20%;
+        }
+
+
+        .tracking-circle {
+            width: 36px;
+            height: 36px;
+            margin: 0 auto 8px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background: #e5e7eb;
+            color: #6b7280;
+
+            font-weight: 700;
+        }
+
+
+        .tracking-step.active
+        .tracking-circle {
+
+            background: #f5b800;
+            color: #171717;
+
+        }
+
+
+        .tracking-step.completed
+        .tracking-circle {
+
+            background: #d99d00;
+            color: #ffffff;
+
+        }
+
+
+        .tracking-text {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+
+        .tracking-step.active
+        .tracking-text {
+
+            color: #171717;
+            font-weight: 700;
+
+        }
+
+
+        .order-details {
+            border-top: 1px solid #eeeeee;
+            padding-top: 18px;
+        }
+
+
+        .order-details p {
+            margin: 7px 0;
+        }
+
+
+        @media (max-width: 600px) {
+
+            .order-card {
+                padding: 20px 15px;
+            }
+
+            .tracking-text {
+                font-size: 10px;
+            }
+
+            .tracking-circle {
+                width: 32px;
+                height: 32px;
+                font-size: 12px;
+            }
+
+        }
+
+    </style>
+
 </head>
+
 
 <body>
 
+
 <header class="header">
 
-    <div class="logo">TLogos</div>
+    <div class="logo">
+        TLogos
+    </div>
 
-    <a href="customer-dashboard.html" class="back-link">
+    <a
+        href="customer-dashboard.html"
+        class="back-link"
+    >
         ← Dashboard
     </a>
 
 </header>
 
 
-<main class="form-page">
 
-    <div class="form-card">
+<main class="dashboard">
 
-        <h1>My Orders</h1>
 
-        <p class="form-intro">
-            View your laundry requests and their current status.
+    <section class="dashboard-welcome">
+
+        <h1>
+            My Orders 📦
+        </h1>
+
+        <p>
+            Track your laundry from pickup to delivery.
         </p>
 
+    </section>
 
-        <div id="ordersContainer">
 
-            <p>Loading your orders...</p>
+
+    <section id="ordersContainer">
+
+        <div class="dashboard-card">
+
+            <p>
+                Loading your orders...
+            </p>
 
         </div>
 
-    </div>
+    </section>
+
 
 </main>
+
 
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -51,48 +225,196 @@
 
 <script>
 
+const statusSteps = [
+
+    "requested",
+
+    "accepted",
+
+    "washing",
+
+    "ready",
+
+    "delivered"
+
+];
+
+
+function formatStatus(status) {
+
+    const names = {
+
+        requested:
+            "Request Sent",
+
+        accepted:
+            "Accepted",
+
+        washing:
+            "Washing",
+
+        ready:
+            "Ready",
+
+        delivered:
+            "Delivered"
+
+    };
+
+
+    return names[status] || status;
+
+}
+
+
+
+function getTrackingHTML(
+    currentStatus
+) {
+
+    const currentIndex =
+        statusSteps.indexOf(
+            currentStatus
+        );
+
+
+    const labels = [
+
+        "Requested",
+
+        "Accepted",
+
+        "Washing",
+
+        "Ready",
+
+        "Delivered"
+
+    ];
+
+
+    let html =
+        '<div class="tracking">';
+
+
+    statusSteps.forEach(
+        function(status, index) {
+
+            let className =
+                "tracking-step";
+
+
+            if (
+                index <
+                currentIndex
+            ) {
+
+                className +=
+                    " completed";
+
+            }
+
+
+            if (
+                index ===
+                currentIndex
+            ) {
+
+                className +=
+                    " active";
+
+            }
+
+
+            html += `
+
+                <div class="${className}">
+
+                    <div class="tracking-circle">
+
+                        ${index + 1}
+
+                    </div>
+
+                    <div class="tracking-text">
+
+                        ${labels[index]}
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+    );
+
+
+    html +=
+        "</div>";
+
+
+    return html;
+
+}
+
+
+
 async function loadOrders() {
 
     const container =
-        document.getElementById("ordersContainer");
+        document.getElementById(
+            "ordersContainer"
+        );
+
 
     try {
 
+
         const {
-            data: { user },
+            data: {
+                user
+            },
             error: userError
-        } = await supabaseClient.auth.getUser();
+        } =
+            await supabaseClient.auth.getUser();
 
 
-        if (userError || !user) {
+        if (
+            userError ||
+            !user
+        ) {
 
-            window.location.href = "login.html";
+            window.location.href =
+                "login.html";
 
             return;
+
         }
+
 
 
         const {
             data: orders,
             error
-        } = await supabaseClient
+        } =
+            await supabaseClient
 
-            .from("orders")
+                .from("orders")
 
-            .select(`
-                id,
-                pickup_address,
-                total_amount,
-                status,
-                created_at,
-                laundry_id
-            `)
+                .select("*")
 
-            .eq("customer_id", user.id)
+                .eq(
+                    "customer_id",
+                    user.id
+                )
 
-            .order("created_at", {
-                ascending: false
-            });
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
 
 
         if (error) {
@@ -102,102 +424,146 @@ async function loadOrders() {
         }
 
 
-        if (!orders || orders.length === 0) {
+
+        if (
+            !orders ||
+            orders.length === 0
+        ) {
 
             container.innerHTML = `
+
                 <div class="dashboard-card">
 
-                    <h3>No Orders Yet</h3>
+                    <h2>
+                        No Orders Yet
+                    </h2>
 
                     <p>
-                        You have not made any laundry requests yet.
+                        Your laundry requests
+                        will appear here.
                     </p>
 
                     <button
-                        class="form-button"
-                        onclick="requestLaundry()"
+                        class="dashboard-button"
+                        onclick="
+                            window.location.href =
+                            'request-laundry.html'
+                        "
+                        style="margin-top:15px;"
                     >
                         Request Laundry
                     </button>
 
                 </div>
+
             `;
 
             return;
+
         }
+
 
 
         container.innerHTML = "";
 
 
-        orders.forEach(order => {
 
-            const date =
-                new Date(order.created_at)
-                .toLocaleString();
+        orders.forEach(
+            function(order) {
 
-
-            let statusText =
-                order.status || "requested";
-
-
-            statusText =
-                statusText.charAt(0).toUpperCase()
-                + statusText.slice(1);
+                const card =
+                    document.createElement(
+                        "div"
+                    );
 
 
-            const orderCard =
-                document.createElement("div");
-
-            orderCard.className =
-                "dashboard-card";
+                card.className =
+                    "order-card";
 
 
-            orderCard.innerHTML = `
+                card.innerHTML = `
 
-                <h3>
-                    Order #${order.id.substring(0, 8)}
-                </h3>
+                    <div class="order-header">
 
-                <p>
-                    <strong>Pickup:</strong>
-                    ${order.pickup_address}
-                </p>
+                        <div class="order-number">
 
-                <p>
-                    <strong>Status:</strong>
-                    ${statusText}
-                </p>
+                            Laundry Order
 
-                <p>
-                    <strong>Amount:</strong>
-                    GH₵ ${Number(
-                        order.total_amount || 0
-                    ).toFixed(2)}
-                </p>
+                        </div>
 
-                <p>
-                    <strong>Date:</strong>
-                    ${date}
-                </p>
+                        <div class="status-label">
 
-            `;
+                            ${formatStatus(
+                                order.status
+                            )}
+
+                        </div>
+
+                    </div>
 
 
-            container.appendChild(orderCard);
+                    ${getTrackingHTML(
+                        order.status
+                    )}
 
-        });
+
+                    <div class="order-details">
+
+                        <p>
+
+                            <strong>
+                                Pickup:
+                            </strong>
+
+                            ${order.pickup_address}
+
+                        </p>
+
+
+                        <p>
+
+                            <strong>
+                                Requested:
+                            </strong>
+
+                            ${new Date(
+                                order.created_at
+                            ).toLocaleString()}
+
+                        </p>
+
+                    </div>
+
+                `;
+
+
+                container.appendChild(
+                    card
+                );
+
+            }
+        );
 
 
     } catch (error) {
 
         console.error(error);
 
+
         container.innerHTML = `
-            <p>
-                Unable to load your orders.
-                Please try again.
-            </p>
+
+            <div class="dashboard-card">
+
+                <h2>
+                    Unable to Load Orders
+                </h2>
+
+                <p>
+                    ${error.message}
+                </p>
+
+            </div>
+
         `;
 
     }
@@ -205,36 +571,50 @@ async function loadOrders() {
 }
 
 
-function requestLaundry() {
-
-    window.location.href =
-        "request-laundry.html";
-
-}
-
 
 loadOrders();
 
+
+
 const {
     data: orderChannel
-} = supabaseClient
-    .channel("customer-orders")
-    .on(
-        "postgres_changes",
-        {
-            event: "UPDATE",
-            schema: "public",
-            table: "orders"
-        },
-        function(payload) {
+} =
+    supabaseClient
 
-            loadOrders();
+        .channel(
+            "customer-orders"
+        )
 
-        }
-    )
-    .subscribe();
+        .on(
+
+            "postgres_changes",
+
+            {
+
+                event:
+                    "UPDATE",
+
+                schema:
+                    "public",
+
+                table:
+                    "orders"
+
+            },
+
+            function() {
+
+                loadOrders();
+
+            }
+
+        )
+
+        .subscribe();
 
 </script>
 
+
 </body>
+
 </html>
