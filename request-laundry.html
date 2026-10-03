@@ -694,30 +694,32 @@ async function requestLaundry(
         } =
             await supabaseClient
 
-                .from("orders")
+               .from("orders")
 
-                .insert({
+.insert({
 
-                    customer_id:
-                        user.id,
+    customer_id:
+        user.id,
 
-                    laundry_id:
-                        laundryId,
+    laundry_id:
+        laundryId,
 
-                    pickup_address:
-                        pickupAddress,
+    pickup_address:
+        pickupAddress,
 
-                    pickup_latitude:
-                        customerLatitude,
+    pickup_latitude:
+        customerLatitude,
 
-                    pickup_longitude:
-                        customerLongitude,
+    pickup_longitude:
+        customerLongitude,
 
-                    status:
-                        "requested"
+    laundry_types:
+        selectedLaundryTypes,
 
-                })
+    status:
+        "requested"
 
+})
                 .select()
 
                 .single();
