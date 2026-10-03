@@ -197,9 +197,15 @@ async function loadRequests() {
 
                 card.innerHTML = `
 
-                    <h2>
-                        New Laundry Request
-                    </h2>
+                <h2>
+    ${request.order_reference || "TLogos Order"}
+</h2>
+
+<p>
+    <strong>
+        New Laundry Request
+    </strong>
+</p>
 
                     <p>
                         <strong>
