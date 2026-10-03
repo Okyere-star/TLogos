@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -27,8 +28,8 @@
     </div>
 
     <button
-        id="logoutButton"
         class="logout-button"
+        onclick="logout()"
     >
         Logout
     </button>
@@ -42,12 +43,12 @@
 
     <section class="dashboard-welcome">
 
-        <h1>
+        <h1 id="customerName">
             Welcome to TLogos 👋
         </h1>
 
-        <p id="customerName">
-            Loading your profile...
+        <p>
+            Request laundry services and track your orders.
         </p>
 
     </section>
@@ -56,6 +57,8 @@
 
     <section class="dashboard-grid">
 
+
+        <!-- Request Laundry -->
 
         <div class="dashboard-card">
 
@@ -68,12 +71,13 @@
             </h2>
 
             <p>
-                Find nearby laundry businesses and request their services.
+                Find nearby laundry businesses
+                and send a laundry request.
             </p>
 
             <button
                 class="dashboard-button"
-                onclick="requestLaundry()"
+                onclick="window.location.href='request-laundry.html'"
             >
                 Request Laundry
             </button>
@@ -81,6 +85,8 @@
         </div>
 
 
+
+        <!-- My Orders -->
 
         <div class="dashboard-card">
 
@@ -93,12 +99,13 @@
             </h2>
 
             <p>
-                Track your laundry requests and current orders.
+                Track your laundry from
+                request to delivery.
             </p>
 
             <button
                 class="dashboard-button"
-                onclick="viewOrders()"
+                onclick="window.location.href='my-orders.html'"
             >
                 View My Orders
             </button>
@@ -106,6 +113,8 @@
         </div>
 
 
+
+        <!-- My Reviews -->
 
         <div class="dashboard-card">
 
@@ -118,19 +127,22 @@
             </h2>
 
             <p>
-                View and manage your laundry service reviews.
+                View and manage your
+                laundry service reviews.
             </p>
 
             <button
                 class="dashboard-button"
-                onclick="viewReviews()"
+                onclick="showComingSoon('Reviews')"
             >
-                View Reviews
+                My Reviews
             </button>
 
         </div>
 
 
+
+        <!-- My Profile -->
 
         <div class="dashboard-card">
 
@@ -143,12 +155,13 @@
             </h2>
 
             <p>
-                View your TLogos customer account information.
+                View and manage your
+                TLogos customer information.
             </p>
 
             <button
                 class="dashboard-button"
-                onclick="viewProfile()"
+                onclick="showComingSoon('Profile')"
             >
                 My Profile
             </button>
@@ -157,6 +170,7 @@
 
 
     </section>
+
 
 </main>
 
@@ -169,104 +183,118 @@
 
 <script>
 
+
 async function loadCustomer() {
 
-    const {
-        data: {
-            user
-        },
-        error
-    } = await supabaseClient.auth.getUser();
+    try {
+
+        const {
+            data: {
+                user
+            },
+            error: userError
+        } =
+            await supabaseClient.auth.getUser();
 
 
-    if (error || !user) {
+        if (userError || !user) {
 
-        window.location.href =
-            "login.html";
+            window.location.href =
+                "login.html";
 
-        return;
+            return;
 
-    }
-
-
-    const {
-        data: customer,
-        error: customerError
-    } = await supabaseClient
-        .from("customers")
-        .select("full_name")
-        .eq("id", user.id)
-        .single();
+        }
 
 
-    if (customerError) {
+        const {
+            data: customer,
+            error: customerError
+        } =
+            await supabaseClient
 
-        console.error(customerError);
+                .from("customers")
+
+                .select("full_name")
+
+                .eq(
+                    "id",
+                    user.id
+                )
+
+                .single();
+
+
+        if (customerError) {
+
+            throw customerError;
+
+        }
+
 
         document.getElementById(
             "customerName"
         ).textContent =
-            "Welcome to TLogos";
+            "Hello, " +
+            customer.full_name +
+            "! 👋";
 
-        return;
+
+    } catch (error) {
+
+        console.error(
+            "Could not load customer:",
+            error
+        );
 
     }
-
-
-    document.getElementById(
-        "customerName"
-    ).textContent =
-        "Hello, " + customer.full_name + "!";
 
 }
 
 
 
-document
-    .getElementById("logoutButton")
-    .addEventListener("click", async function() {
+async function logout() {
 
-        await supabaseClient.auth.signOut();
+    try {
+
+        const {
+            error
+        } =
+            await supabaseClient.auth.signOut();
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
 
         window.location.href =
             "index.html";
 
-    });
+
+    } catch (error) {
+
+        console.error(error);
 
 
+        alert(
+            "Logout failed: " +
+            error.message
+        );
 
-function requestLaundry() {
-
-    window.location.href =
-        "request-laundry.html";
-
-}
-
-
-
-function viewOrders() {
-
-    window.location.href =
-        "my-orders.html";
+    }
 
 }
 
 
 
-function viewReviews() {
+function showComingSoon(feature) {
 
     alert(
-        "Reviews section will be built next!"
-    );
-
-}
-
-
-
-function viewProfile() {
-
-    alert(
-        "Profile section will be built next!"
+        feature +
+        " feature is coming soon."
     );
 
 }
@@ -275,9 +303,11 @@ function viewProfile() {
 
 loadCustomer();
 
+
 </script>
 
 
 </body>
 
 </html>
+```
