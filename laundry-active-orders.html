@@ -20,334 +20,426 @@
 <body>
 
 
-    <header class="header">
+<header class="header">
 
-        <div class="logo">
-            TLogos
+    <div class="logo">
+        TLogos
+    </div>
+
+    <a
+        href="laundry-dashboard.html"
+        class="back-link"
+    >
+        ← Dashboard
+    </a>
+
+</header>
+
+
+
+<main class="dashboard">
+
+
+    <section class="dashboard-welcome">
+
+        <h1>
+            Active Orders 📦
+        </h1>
+
+        <p>
+            Manage your customers' laundry orders.
+        </p>
+
+    </section>
+
+
+
+    <section id="ordersContainer">
+
+        <div class="dashboard-card">
+
+            <p>
+                Loading orders...
+            </p>
+
         </div>
 
-        <a
-            href="laundry-dashboard.html"
-            class="back-link"
-        >
-            ← Dashboard
-        </a>
+    </section>
 
-    </header>
+
+</main>
 
 
 
-    <main class="dashboard">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-        <section class="dashboard-welcome">
-
-            <h1>
-                Active Orders
-            </h1>
-
-            <p>
-                Manage laundry orders you have accepted.
-            </p>
-
-        </section>
+<script src="supabase.js"></script>
 
 
+<script>
 
-        <section id="ordersContainer">
+async function loadOrders() {
 
-            <p>
-                Loading active orders...
-            </p>
-
-        </section>
-
-    </main>
+    const container =
+        document.getElementById(
+            "ordersContainer"
+        );
 
 
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <script src="supabase.js"></script>
+    try {
 
 
-    <script>
+        const {
+            data: {
+                user
+            },
+            error: userError
+        } =
+            await supabaseClient.auth.getUser();
 
-        async function loadActiveOrders() {
 
-            const container =
-                document.getElementById(
-                    "ordersContainer"
+        if (userError || !user) {
+
+            window.location.href =
+                "laundry-login.html";
+
+            return;
+
+        }
+
+
+
+        const {
+            data: orders,
+            error
+        } =
+            await supabaseClient
+
+                .from("orders")
+
+                .select("*")
+
+                .eq(
+                    "laundry_id",
+                    user.id
+                )
+
+                .in(
+                    "status",
+                    [
+                        "accepted",
+                        "washing",
+                        "ready"
+                    ]
+                )
+
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
                 );
 
 
-            try {
+        if (error) {
 
-                const {
-                    data: {
-                        user
-                    },
-                    error: userError
-                } =
-                    await supabaseClient.auth.getUser();
+            throw error;
+
+        }
 
 
-                if (userError || !user) {
 
-                    window.location.href =
-                        "login.html";
+        if (
+            !orders ||
+            orders.length === 0
+        ) {
 
-                    return;
+            container.innerHTML = `
+
+                <div class="dashboard-card">
+
+                    <h2>
+                        No Active Orders
+                    </h2>
+
+                    <p>
+                        Accepted laundry orders
+                        will appear here.
+                    </p>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+
+        container.innerHTML = "";
+
+
+
+        orders.forEach(
+            function(order) {
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                card.className =
+                    "dashboard-card";
+
+
+                card.style.marginBottom =
+                    "20px";
+
+
+                let nextStatus =
+                    "";
+
+                let buttonText =
+                    "";
+
+
+                if (
+                    order.status ===
+                    "accepted"
+                ) {
+
+                    nextStatus =
+                        "washing";
+
+                    buttonText =
+                        "Start Washing";
+
+                }
+
+                else if (
+                    order.status ===
+                    "washing"
+                ) {
+
+                    nextStatus =
+                        "ready";
+
+                    buttonText =
+                        "Mark as Ready";
+
+                }
+
+                else if (
+                    order.status ===
+                    "ready"
+                ) {
+
+                    nextStatus =
+                        "delivered";
+
+                    buttonText =
+                        "Mark as Delivered";
 
                 }
 
 
-                const {
-                    data: orders,
-                    error
-                } =
-                    await supabaseClient
-                        .from("orders")
-                        .select("*")
-                        .eq("laundry_id", user.id)
-                        .neq("status", "delivered")
-                        .order(
-                            "created_at",
-                            {
-                                ascending: false
-                            }
-                        );
+
+                card.innerHTML = `
+
+                    <h2>
+                        Laundry Order
+                    </h2>
 
 
-                if (error) {
+                    <p>
+                        <strong>
+                            Pickup:
+                        </strong>
 
-                    throw error;
-
-                }
-
-
-                if (!orders || orders.length === 0) {
-
-                    container.innerHTML = `
-
-                        <div class="dashboard-card">
-
-                            <h2>
-                                No Active Orders
-                            </h2>
-
-                            <p>
-                                Orders you accept will
-                                appear here.
-                            </p>
-
-                        </div>
-
-                    `;
-
-                    return;
-
-                }
+                        ${order.pickup_address}
+                    </p>
 
 
-                container.innerHTML = "";
+                    <p>
+                        <strong>
+                            Order Status:
+                        </strong>
+
+                        ${formatStatus(
+                            order.status
+                        )}
+                    </p>
 
 
-                orders.forEach(function(order) {
+                    <p>
+                        <strong>
+                            Requested:
+                        </strong>
 
-                    const card =
-                        document.createElement("div");
-
-
-                    card.className =
-                        "dashboard-card";
-
-
-                    card.innerHTML = `
-
-                        <h2>
-                            Order #${order.id.substring(0, 8)}
-                        </h2>
-
-                        <p>
-                            <strong>Pickup:</strong>
-                            ${order.pickup_address}
-                        </p>
-
-                        <p>
-                            <strong>Status:</strong>
-                            ${order.status}
-                        </p>
-
-                        <p>
-                            <strong>Requested:</strong>
-                            ${new Date(
-                                order.created_at
-                            ).toLocaleString()}
-                        </p>
+                        ${new Date(
+                            order.created_at
+                        ).toLocaleString()}
+                    </p>
 
 
-                        <div style="margin-top: 20px;">
-
-                            ${
-                                order.status === "accepted"
-                                ? `
-                                    <button
-                                        class="dashboard-button"
-                                        onclick="updateStatus(
-                                            '${order.id}',
-                                            'washing'
-                                        )"
-                                    >
-                                        Start Washing
-                                    </button>
-                                `
-                                : ""
-                            }
-
-
-                            ${
-                                order.status === "washing"
-                                ? `
-                                    <button
-                                        class="dashboard-button"
-                                        onclick="updateStatus(
-                                            '${order.id}',
-                                            'ready'
-                                        )"
-                                    >
-                                        Mark Ready
-                                    </button>
-                                `
-                                : ""
-                            }
-
-
-                            ${
-                                order.status === "ready"
-                                ? `
-                                    <button
-                                        class="dashboard-button"
-                                        onclick="updateStatus(
-                                            '${order.id}',
-                                            'delivered'
-                                        )"
-                                    >
-                                        Mark Delivered
-                                    </button>
-                                `
-                                : ""
-                            }
-
-                        </div>
-
-                    `;
-
-
-                    container.appendChild(card);
-
-                });
-
-
-            } catch (error) {
-
-                console.error(error);
-
-
-                container.innerHTML = `
-
-                    <div class="dashboard-card">
-
-                        <h2>
-                            Unable to load orders
-                        </h2>
-
-                        <p>
-                            ${error.message}
-                        </p>
-
-                    </div>
+                    <button
+                        class="dashboard-button"
+                        onclick="updateStatus(
+                            '${order.id}',
+                            '${nextStatus}'
+                        )"
+                    >
+                        ${buttonText}
+                    </button>
 
                 `;
 
+
+                container.appendChild(
+                    card
+                );
+
             }
+        );
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        container.innerHTML = `
+
+            <div class="dashboard-card">
+
+                <h2>
+                    Unable to Load Orders
+                </h2>
+
+                <p>
+                    ${error.message}
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+
+function formatStatus(status) {
+
+    const names = {
+
+        accepted:
+            "Accepted",
+
+        washing:
+            "Washing",
+
+        ready:
+            "Ready",
+
+        delivered:
+            "Delivered"
+
+    };
+
+
+    return names[status] || status;
+
+}
+
+
+
+async function updateStatus(
+    orderId,
+    newStatus
+) {
+
+    try {
+
+
+        const {
+            data: {
+                user
+            },
+            error: userError
+        } =
+            await supabaseClient.auth.getUser();
+
+
+        if (userError || !user) {
+
+            window.location.href =
+                "laundry-login.html";
+
+            return;
 
         }
 
 
 
-        async function updateStatus(
-            orderId,
-            newStatus
-        ) {
+        const {
+            error
+        } =
+            await supabaseClient
 
-            try {
+                .from("orders")
 
-                const {
-                    data: {
-                        user
-                    },
-                    error: userError
-                } =
-                    await supabaseClient.auth.getUser();
+                .update({
 
+                    status:
+                        newStatus
 
-                if (userError || !user) {
+                })
 
-                    window.location.href =
-                        "login.html";
+                .eq(
+                    "id",
+                    orderId
+                )
 
-                    return;
-
-                }
-
-
-                const {
-                    error
-                } =
-                    await supabaseClient
-                        .from("orders")
-                        .update({
-
-                            status: newStatus
-
-                        })
-                        .eq("id", orderId)
-                        .eq("laundry_id", user.id);
-
-
-                if (error) {
-
-                    throw error;
-
-                }
-
-
-                alert(
-                    "Order status updated successfully!"
+                .eq(
+                    "laundry_id",
+                    user.id
                 );
 
 
-                loadActiveOrders();
+        if (error) {
 
-
-            } catch (error) {
-
-                console.error(error);
-
-
-                alert(
-                    "Could not update order: " +
-                    error.message
-                );
-
-            }
+            throw error;
 
         }
 
 
-        loadActiveOrders();
 
-    </script>
+        loadOrders();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        alert(
+            "Could not update order: " +
+            error.message
+        );
+
+    }
+
+}
+
+
+
+loadOrders();
+
+</script>
 
 
 </body>
