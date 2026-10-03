@@ -13,12 +13,17 @@
 <body>
 
 <header class="header">
-    <div class="logo">TLogos</div>
+
+    <div class="logo">
+        TLogos
+    </div>
 
     <a href="laundry-access.html" class="back-link">
         ← Back
     </a>
+
 </header>
+
 
 <main class="form-page">
 
@@ -29,6 +34,7 @@
         <p class="form-intro">
             Login to manage your laundry business on TLogos.
         </p>
+
 
         <form id="laundryLoginForm">
 
@@ -42,10 +48,10 @@
                     type="email"
                     id="laundryLoginEmail"
                     placeholder="Enter your business email"
-                    required
-                >
+                    required>
 
             </div>
+
 
             <div class="form-group">
 
@@ -57,18 +63,21 @@
                     type="password"
                     id="laundryLoginPassword"
                     placeholder="Enter your password"
-                    required
-                >
+                    required>
 
             </div>
+
 
             <button
                 type="submit"
                 class="form-button">
+
                 Login to TLogos
+
             </button>
 
         </form>
+
 
         <p class="form-footer">
 
@@ -84,8 +93,11 @@
 
 </main>
 
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="supabase.js"></script>
+
 
 <script>
 
@@ -95,63 +107,87 @@ document
 
         event.preventDefault();
 
+
         const email =
             document
                 .getElementById("laundryLoginEmail")
                 .value
                 .trim();
 
+
         const password =
             document
                 .getElementById("laundryLoginPassword")
                 .value;
 
+
         const button =
             document.querySelector(".form-button");
 
+
         button.disabled = true;
-        button.textContent = "Logging in...";
+
+        button.textContent =
+            "Logging in...";
+
 
         try {
 
             const {
                 data,
                 error
-            } = await supabaseClient.auth.signInWithPassword({
+            } =
+                await supabaseClient
+                    .auth
+                    .signInWithPassword({
 
-                email: email,
-                password: password
+                        email: email,
+                        password: password
 
-            });
+                    });
+
 
             if (error) {
+
                 throw error;
+
             }
 
+
             if (!data.user) {
+
                 throw new Error(
                     "Login was not successful."
                 );
+
             }
 
-            alert("Laundry login successful!");
+
+            alert(
+                "Laundry login successful!"
+            );
+
 
             window.location.href =
                 "laundry-dashboard.html";
 
+
         } catch (error) {
 
             console.error(error);
+
 
             alert(
                 "Login failed: " +
                 error.message
             );
 
+
             button.disabled = false;
 
             button.textContent =
                 "Login to TLogos";
+
         }
 
     });
